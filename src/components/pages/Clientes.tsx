@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useData } from '../../contexts/DataContext';
 import { Cliente } from '../../types/entities';
+import InputMask from 'react-input-mask';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -41,7 +42,7 @@ const Clientes = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (editingCliente) {
       updateCliente(editingCliente.id, formData);
       toast({
@@ -55,10 +56,11 @@ const Clientes = () => {
         description: "Novo cliente foi adicionado ao sistema.",
       });
     }
-    
+
     resetForm();
     setDialogOpen(false);
   };
+
 
   const handleEdit = (cliente: Cliente) => {
     setEditingCliente(cliente);
@@ -130,12 +132,14 @@ const Clientes = () => {
                 
                 <div className="space-y-2">
                   <Label htmlFor="telefone">Telefone</Label>
-                  <Input
-                    id="telefone"
-                    value={formData.telefone}
-                    onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
-                    required
-                  />
+ <InputMask
+ mask="(99) 9999-99999"
+ maskChar={null}
+ value={formData.telefone}
+ onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
+ >
+ {(inputProps: any) => <Input id="telefone" {...inputProps} required />}
+ </InputMask>
                 </div>
               </div>
               
@@ -234,3 +238,4 @@ const Clientes = () => {
 };
 
 export default Clientes;
+
