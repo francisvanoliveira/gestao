@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { usuarioService } from '../../services/usuarioService';
 import { User, Save } from 'lucide-react';
 
 const Perfil = () => {
@@ -18,28 +19,33 @@ const Perfil = () => {
     senha: '',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!currentUser) return;
 
-    // Atualizar no localStorage
-    const savedUsers = localStorage.getItem('users');
-    if (savedUsers) {
-      const users = JSON.parse(savedUsers);
-      const updatedUsers = users.map((user: any) =>
-        user.id === currentUser.id
-          ? { ...user, ...formData }
-          : user
-      );
-      localStorage.setItem('users', JSON.stringify(updatedUsers));
-      
+    try {
+      await usuarioService.updateUsuario(currentUser.id, {
+        nome_completo: formData.nome_completo,
+        login: formData.login,
+        senha: formData.senha,
+        perfil: currentUser.perfil, // Manter o perfil existente
+      });
+
       // Atualizar o usuário atual no contexto
       updateCurrentUser({ ...currentUser, ...formData });
-      
+
       toast({
         title: "Perfil atualizado!",
         description: "Suas informações foram salvas com sucesso.",
+      });
+    }
+  catch (error) {
+      console.error('Erro ao atualizar perfil:', error);
+      toast({
+        title: "Erro ao atualizar perfil",
+        description: "Ocorreu um erro ao salvar suas informações. Tente novamente.",
+        variant: "destructive",
       });
     }
   };

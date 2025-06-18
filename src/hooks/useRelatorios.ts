@@ -2,6 +2,7 @@
 import { useState, useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useData } from '../contexts/DataContext';
+import { jsPDF } from 'jspdf';
 
 export const useRelatorios = () => {
   const { currentUser } = useAuth();
@@ -88,33 +89,39 @@ export const useRelatorios = () => {
   }, [dadosFiltrados, clientes, usuarios]);
 
   const gerarPDF = () => {
-    const conteudoPDF = `
-      RELATÓRIO DE DESLOCAMENTOS
-      
-      Período: ${filtros.dataInicio || 'Não especificado'} até ${filtros.dataFim || 'Não especificado'}
-      
-      RESUMO:
-      - Total de deslocamentos: ${estatisticas.totalDeslocamentos}
-      - Valor total: R$ ${estatisticas.valorTotal.toFixed(2)}
-      - Valor validado: R$ ${estatisticas.valorValidado.toFixed(2)}
-      - Valor finalizado: R$ ${estatisticas.valorFinalizado.toFixed(2)}
-      
-      DETALHES:
-      ${relatorioDetalhado.map(item => `
-      Data: ${new Date(item.data_deslocamento).toLocaleDateString('pt-BR')}
-      Cliente: ${item.clienteNome}
-      Usuário: ${item.usuarioNome}
-      Valor: R$ ${item.valorTotal.toFixed(2)}
-      Status: ${item.finalizado_por_financeiro ? 'Finalizado' : item.validado_por_gestor ? 'Validado' : 'Pendente'}
-      `).join('\n')}
-    `;
+    const doc = new jsPDF();
+    let yOffset = 10;
 
-    const blob = new Blob([conteudoPDF], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `relatorio-deslocamentos-${new Date().toISOString().split('T')[0]}.txt`;
-    link.click();
+    doc.text('RELATÓRIO DE DESLOCAMENTOS', 10, yOffset);
+    yOffset += 10;
+
+    doc.text(`Período: ${filtros.dataInicio || 'Não especificado'} até ${filtros.dataFim || 'Não especificado'}`, 10, yOffset);
+    yOffset += 15;
+
+    doc.text('RESUMO:', 10, yOffset);
+    yOffset += 5;
+    doc.text(`- Total de deslocamentos: ${estatisticas.totalDeslocamentos}`, 15, yOffset);
+    yOffset += 5;
+    doc.text(`- Valor total: R$ ${estatisticas.valorTotal.toFixed(2)}`, 15, yOffset);
+    yOffset += 5;
+    doc.text(`- Valor validado: R$ ${estatisticas.valorValidado.toFixed(2)}`, 15, yOffset);
+    yOffset += 5;
+    doc.text(`- Valor finalizado: R$ ${estatisticas.valorFinalizado.toFixed(2)}`, 15, yOffset);
+    yOffset += 15;
+
+    doc.text('DETALHES:', 10, yOffset);
+    yOffset += 5;
+
+    relatorioDetalhado.forEach(item => {
+      doc.text(`Data: ${new Date(item.data_deslocamento).toLocaleDateString('pt-BR')}`, 15, yOffset);
+      doc.text(`Cliente: ${item.clienteNome}`, 15, yOffset + 5);
+      doc.text(`Usuário: ${item.usuarioNome}`, 15, yOffset + 10);
+      doc.text(`Valor: R$ ${item.valorTotal.toFixed(2)}`, 15, yOffset + 15);
+      doc.text(`Status: ${item.finalizado_por_financeiro ? 'Finalizado' : item.validado_por_gestor ? 'Validado' : 'Pendente'}`, 15, yOffset + 20);
+      yOffset += 30; // Espaçamento entre os itens detalhados
+    });
+
+    doc.save(`relatorio-deslocamentos-${new Date().toISOString().split('T')[0]}.pdf`);
   };
 
   const resetFiltros = () => {
