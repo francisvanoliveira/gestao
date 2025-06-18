@@ -25,9 +25,7 @@ const Login = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="p-3 bg-blue-100 rounded-full">
-              <Building2 className="h-8 w-8 text-blue-600" />
-            </div>
+          <img src="/logo.png" alt="Logo" className="h-8 w-8 text-blue-600" />
           </div>
           <CardTitle className="text-2xl font-bold text-gray-900">Sistema de Deslocamentos</CardTitle>
           <CardDescription>Faça login para acessar o sistema</CardDescription>
