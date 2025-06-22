@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -37,7 +36,14 @@ export const RelatorioDetalhado: React.FC<RelatorioDetalhadoProps> = ({ relatori
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Data</p>
-                    <p className="font-medium">{new Date(item.data_deslocamento).toLocaleDateString('pt-BR')}</p>
+                    {/* Corrigido para usar Intl.DateTimeFormat com ajuste de fuso horário */}
+                    <p className="font-medium">
+                      {new Intl.DateTimeFormat('pt-BR', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                      }).format(new Date(item.data_deslocamento + 'T00:00:00'))}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Meio</p>

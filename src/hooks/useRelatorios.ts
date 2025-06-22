@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useData } from '../contexts/DataContext';
@@ -7,7 +6,7 @@ import { jsPDF } from 'jspdf';
 export const useRelatorios = () => {
   const { currentUser } = useAuth();
   const { clientes, deslocamentos, usuarios } = useData();
-  
+
   const [filtros, setFiltros] = useState({
     mes: '',
     ano: new Date().getFullYear().toString(),
@@ -37,7 +36,7 @@ export const useRelatorios = () => {
     if (filtros.mes && filtros.mes !== 'todos' && filtros.ano) {
       dados = dados.filter(d => {
         const data = new Date(d.data_deslocamento);
-        return data.getMonth() + 1 === parseInt(filtros.mes) && 
+        return data.getMonth() + 1 === parseInt(filtros.mes) &&
                data.getFullYear() === parseInt(filtros.ano);
       });
     } else if (filtros.ano) {
@@ -78,7 +77,7 @@ export const useRelatorios = () => {
     return dadosFiltrados.map(d => {
       const cliente = clientes.find(c => c.id === d.cliente_id);
       const usuario = usuarios.find(u => u.id === d.usuario_id);
-      
+
       return {
         ...d,
         clienteNome: cliente?.nome || 'Cliente não encontrado',
@@ -113,7 +112,12 @@ export const useRelatorios = () => {
     yOffset += 5;
 
     relatorioDetalhado.forEach(item => {
-      doc.text(`Data: ${new Date(item.data_deslocamento).toLocaleDateString('pt-BR')}`, 15, yOffset);
+      // Corrigido para usar Intl.DateTimeFormat com ajuste de fuso horário
+      doc.text(`Data: ${new Intl.DateTimeFormat('pt-BR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }).format(new Date(item.data_deslocamento + 'T00:00:00'))}`, 15, yOffset);
       doc.text(`Cliente: ${item.clienteNome}`, 15, yOffset + 5);
       doc.text(`Usuário: ${item.usuarioNome}`, 15, yOffset + 10);
       doc.text(`Valor: R$ ${item.valorTotal.toFixed(2)}`, 15, yOffset + 15);

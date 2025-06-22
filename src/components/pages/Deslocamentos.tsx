@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Car } from 'lucide-react';
 import { useDeslocamentos } from '../../hooks/useDeslocamentos';
@@ -22,8 +21,8 @@ const Deslocamentos = () => {
     handleDelete,
     handleValidar,
     handleFinalizar,
-    getClienteNome,
-    getUsuarioNome,
+    getClienteNome, // Mantemos as funções do hook para usá-las aqui
+    getUsuarioNome, // Mantemos as funções do hook para usá-las aqui
     canEdit,
     canDelete,
   } = useDeslocamentos();
@@ -37,7 +36,7 @@ const Deslocamentos = () => {
             {currentUser?.perfil === 'usuario' ? 'Meus Deslocamentos' : 'Gestão de Deslocamentos'}
           </h1>
           <p className="text-gray-600">
-            {currentUser?.perfil === 'usuario' 
+            {currentUser?.perfil === 'usuario'
               ? 'Gerencie seus deslocamentos'
               : currentUser?.perfil === 'financeiro'
               ? 'Deslocamentos dos últimos 30 dias'
@@ -45,7 +44,7 @@ const Deslocamentos = () => {
             }
           </p>
         </div>
-        
+
         <DeslocamentoForm
           currentUser={currentUser}
           clientes={clientes}
@@ -66,8 +65,9 @@ const Deslocamentos = () => {
             key={deslocamento.id}
             deslocamento={deslocamento}
             currentUser={currentUser}
-            getClienteNome={getClienteNome}
-            getUsuarioNome={getUsuarioNome}
+            // Chamando as funções para obter os nomes e passando como props
+            clienteNome={getClienteNome(deslocamento.cliente_id)}
+            usuarioNome={getUsuarioNome(deslocamento.usuario_id)}
             canEdit={canEdit}
             canDelete={canDelete}
             handleEdit={handleEdit}
