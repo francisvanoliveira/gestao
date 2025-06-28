@@ -132,7 +132,7 @@ export const useRelatorios = () => {
       body: relatorioDetalhado.map(item => [
         item.clienteNome,
         item.usuarioNome,
-        new Date(item.data_deslocamento).toLocaleDateString('pt-BR'),
+        new Date(item.data_deslocamento + 'T00:00:00').toLocaleDateString('pt-BR'),
         `R$ ${item.valorTotal.toFixed(2)}`,
       ]),
       theme: 'striped',
