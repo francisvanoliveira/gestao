@@ -139,6 +139,14 @@ export const useRelatorios = () => {
       styles: { fontSize: 10 },
     });
 
+    const now = new Date();
+    const generationDate = now.toLocaleDateString('pt-BR');
+    const generationTime = now.toLocaleTimeString('pt-BR');
+    const generatedBy = currentUser?.nome_completo || 'Usuário desconhecido';
+
+    doc.text(`Gerado em: ${generationDate} ${generationTime}`, 10, (doc as any).lastAutoTable.finalY + 10);
+    doc.text(`Por: ${generatedBy}`, 10, (doc as any).lastAutoTable.finalY + 15);
+
     doc.save(`relatorio-deslocamentos-${new Date().toISOString().split('T')[0]}.pdf`);
   };
 
